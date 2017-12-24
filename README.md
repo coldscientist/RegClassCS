@@ -65,5 +65,5 @@ GNU [GPLv3](LICENSE) License.
 
 ## Contributors
 
-	* Anthony Roach - QuickRegistry(https://www.codeproject.com/Articles/3000/Quick-Registry-class-in-C)
+* Anthony Roach - QuickRegistry(https://www.codeproject.com/Articles/3000/Quick-Registry-class-in-C)
 	
