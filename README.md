@@ -1,8 +1,8 @@
 # RegClassCS
 
-[![license](https://img.shields.io/github/license/coldscientist/vbszip.svg?maxAge=2592000)](https://github.com/coldscientist/vbszip/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/coldscientist/regclasscs.svg?maxAge=2592000)](https://github.com/coldscientist/regclasscs/blob/master/LICENSE)
 
-C# Registry functions for Ketarin(http://ketarin.canneverbe.com).
+C# Registry functions for [Ketarin](http://ketarin.canneverbe.com).
 
 ## Usage
 
@@ -65,5 +65,5 @@ GNU [GPLv3](LICENSE) License.
 
 ## Contributors
 
-* Anthony Roach - QuickRegistry(https://www.codeproject.com/Articles/3000/Quick-Registry-class-in-C)
+* Anthony Roach - [QuickRegistry](https://www.codeproject.com/Articles/3000/Quick-Registry-class-in-C)
 	
