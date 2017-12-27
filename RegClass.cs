@@ -95,7 +95,6 @@ Func<string, string, bool> RegCreateKey = new Func<string, string, bool>( (rootN
 			
 			using (localKey)
 			{
-				RegCreateKey:
 				if (localKey != null)
 				{
 					localKey.CreateSubKey( keyName );
@@ -103,8 +102,6 @@ Func<string, string, bool> RegCreateKey = new Func<string, string, bool>( (rootN
 				else
 				{
 					// Abort("Key " + rootName + @"\" + keyName + " not found.");
-										
-					goto RegCreateKey;
 				}
 			}
 		}
