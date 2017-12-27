@@ -8,6 +8,8 @@ C# Registry functions for [Ketarin](http://ketarin.canneverbe.com).
 
 ### RegSetValue
 
+	RegSetValue(rootName, keyName, valueName, o, typeName);
+
 	RegSetValue("HKEY_CURRENT_USER", @"Software\Microsoft\Windows\CurrentVersion\Uninstall\5f7eb300e2ea4ebf", "ShortcutAppId", "github-windows.s3.amazonaws.com", "REG_SZ");
 
 ### RegDeleteValue

@@ -18,6 +18,12 @@
   Abort("Error text");
     Exits the script with a given error.
 */
+
+/// <summary>
+/// Opens a new RegistryKey that represents the requested key on the local machine with the specified view.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <returns>The requested registry key.</returns>
 Func<string, Microsoft.Win32.RegistryKey> RegOpenSubKey = new Func<string, Microsoft.Win32.RegistryKey>( (rootName) =>
 	{
 		Microsoft.Win32.RegistryKey localKey = null;
@@ -72,6 +78,12 @@ Func<string, Microsoft.Win32.RegistryKey> RegOpenSubKey = new Func<string, Micro
 		return localKey;
 	});
 
+/// <summary>
+/// Creates a new subkey or opens an existing subkey for write access.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="keyName">The name or path of the subkey to create or open. This string is not case-sensitive.</param>
+/// <returns>The newly created subkey, or false if the operation failed. If a zero-length string is specified for subkey, the current RegistryKey object is returned.</returns>
 Func<string, string, bool> RegCreateKey = new Func<string, string, bool>( (rootName, keyName) =>
     {
 		try
@@ -104,7 +116,13 @@ Func<string, string, bool> RegCreateKey = new Func<string, string, bool>( (rootN
 		
 		return true;
 	});
-	
+
+/// <summary>
+/// Deletes a subkey and any child subkeys recursively. No warning will be provided.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The subkey to delete. This string is not case-sensitive.</param>
+/// <returns>Returns false if the operation failed.</returns>
 Func<string, string, bool> RegDeleteKey = new Func<string, string, bool>( (rootName, subKeyName) =>
     {
 		try
@@ -133,7 +151,14 @@ Func<string, string, bool> RegDeleteKey = new Func<string, string, bool>( (rootN
 		
 		return true;
 	});
-	
+
+/// <summary>
+/// Retrieves the value associated with the specified name.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The name or path of the subkey to open. This string is not case-sensitive.</param>
+/// <param name="valueName">The name of the value to retrieve. This string is not case-sensitive. When the GetValue method retrieves expandable string values (RegistryValueKind.ExpandString), it expands environment strings using data from the local environment.</param>
+/// <returns>Returns null if the name/value pair does not exist in the registry.</returns>
 Func<string, string, string, object> RegGetValue = new Func<string, string, string, object>( (rootName, keyName, valueName) =>
     {
 		try
@@ -200,6 +225,13 @@ Func<string, string, string, object> RegGetValue = new Func<string, string, stri
         return null;
 	});
 
+/// <summary>
+/// Retrieves the registry data type of the value associated with the specified name.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The name or path of the subkey to open. This string is not case-sensitive.</param>
+/// <param name="valueName">The registry data type of the value associated with name. A registry key can have one value that is not associated with any name. When this unnamed value is displayed in the registry editor, the string "(Default)" appears instead of a name. To retrieve the registry data type of this unnamed value, specify either null or the empty string ("") for name.</param>
+/// <returns>Returns a string value with the data type of the value associated with name. Returns null if the name/value pair does not exist in the registry.</returns>
 Func<string, string, string, string> RegGetValueKind = new Func<string, string, string, string>( (rootName, keyName, valueName) =>
     {
 		try
@@ -212,23 +244,30 @@ Func<string, string, string, string> RegGetValueKind = new Func<string, string, 
 			{
 				if (localKey != null)
 				{
-					switch(localKey.GetValueKind(valueName))
+					if (localKey.GetValue(valueName) != null) // Value exists
 					{
-						case Microsoft.Win32.RegistryValueKind.String:
-							return "REG_SZ";
-						case Microsoft.Win32.RegistryValueKind.ExpandString:
-							return "REG_EXPAND_SZ";
-						case Microsoft.Win32.RegistryValueKind.Binary:
-							return "REG_BINARY";
-						case Microsoft.Win32.RegistryValueKind.DWord:
-							return "REG_DWORD";
-						case Microsoft.Win32.RegistryValueKind.QWord:
-							return "REG_QWORD";
-						case Microsoft.Win32.RegistryValueKind.MultiString:
-							return "REG_MULTI_SZ";
-						default:
-							Ketarin.Forms.LogDialog.Log("ValueKind = (Unknown)");
-							break;
+						switch(localKey.GetValueKind(valueName))
+						{
+							case Microsoft.Win32.RegistryValueKind.String:
+								return "REG_SZ";
+							case Microsoft.Win32.RegistryValueKind.ExpandString:
+								return "REG_EXPAND_SZ";
+							case Microsoft.Win32.RegistryValueKind.Binary:
+								return "REG_BINARY";
+							case Microsoft.Win32.RegistryValueKind.DWord:
+								return "REG_DWORD";
+							case Microsoft.Win32.RegistryValueKind.QWord:
+								return "REG_QWORD";
+							case Microsoft.Win32.RegistryValueKind.MultiString:
+								return "REG_MULTI_SZ";
+							default:
+								Ketarin.Forms.LogDialog.Log("ValueKind = (Unknown)");
+								break;
+						}
+					}
+					else
+					{
+						return null;
 					}
 				}
 			}
@@ -240,17 +279,26 @@ Func<string, string, string, string> RegGetValueKind = new Func<string, string, 
 		
 		return null;
 	});
-	
-Func<string, string, string, object, string, bool> RegSetValue = new Func<string, string, string, object, string, bool>( (rootName, keyName, valueName, o, typeName) =>
+
+/// <summary>
+/// Sets the value of a name/value pair in the registry key, using the specified registry data type.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The name or path of the subkey to open. This string is not case-sensitive.</param>
+/// <param name="valueName">The name of the value to be stored. If the specified name does not exist in the key, it is created, and the associated value is set to value. A registry key can have one value that is not associated with any name. When this unnamed value is displayed in the registry editor, the string "(Default)" appears instead of a name. To set this unnamed value, specify either null or the empty string ("") for name.</param>
+/// <param name="o">The data to be stored.</param>
+/// <param name="valueKind">The registry data type to use when storing the data.</param>
+/// <returns>Returns true if the name/value pair can be written to; or false if the operation failed.</returns>
+Func<string, string, string, object, string, bool> RegSetValue = new Func<string, string, string, object, string, bool>( (rootName, keyName, valueName, o, valueKind) =>
 	{
 		try
 		{
 			Microsoft.Win32.RegistryKey localKey = RegOpenSubKey(rootName);
 			localKey = localKey.OpenSubKey(keyName);
-			Ketarin.Forms.LogDialog.Log("RegSetValue(" + rootName + ", " + keyName + ", " + valueName + ", " + typeName + ")");
+			Ketarin.Forms.LogDialog.Log("RegSetValue(" + rootName + ", " + keyName + ", " + valueName + ", " + valueKind + ")");
 			
 			Microsoft.Win32.RegistryValueKind typeIn = Microsoft.Win32.RegistryValueKind.None;		
-			switch(typeName)
+			switch(valueKind)
 			{
 				case "REG_SZ":
 					typeIn = Microsoft.Win32.RegistryValueKind.String;
@@ -334,8 +382,15 @@ Func<string, string, string, object, string, bool> RegSetValue = new Func<string
 		
         return true;
 	});
-	
-Func<string, string, string, int> RegDeleteValue = new Func<string, string, string, int>( (rootName, keyName, valueName ) =>
+
+/// <summary>
+/// Deletes the specified value from this key.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The name or path of the subkey to open. This string is not case-sensitive.</param>
+/// <param name="valueName">The name of the value to delete. A registry key can have one value that is not associated with any name. When this unnamed value is displayed in the registry editor, the string "(Default)" appears instead of a name. To delete this unnamed value, specify either null or the empty string ("") for name.</param>
+/// <returns></returns>
+Func<string, string, string, bool> RegDeleteValue = new Func<string, string, string, bool>( (rootName, keyName, valueName ) =>
 	{
 		try
 		{
@@ -362,6 +417,12 @@ Func<string, string, string, int> RegDeleteValue = new Func<string, string, stri
 		return true;
 	});
 
+/// <summary>
+/// Retrieves an array of strings that contains all the subkey names.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The name or path of the subkey to open. This string is not case-sensitive.</param>
+/// <returns>An array of strings that contains the names of the subkeys for the current key. This method does not recursively find names. It returns the names on the base level from which it was called.</returns>
 Func<string, string, string[]> RegGetSubKeyNames = new Func<string, string, string[]>( (rootName, keyName) =>
     {
 		try
@@ -405,6 +466,12 @@ Func<string, string, string[]> RegGetSubKeyNames = new Func<string, string, stri
 		return null;
 	});
 
+/// <summary>
+/// Retrieves an array of strings that contains all the subkey names and any child subkeys names recursively.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The name or path of the subkey to open. This string is not case-sensitive.</param>
+/// <returns>An array of strings that contains the names of the subkeys and any child subkeys for the current key.</returns>
 Func<string, string, string[]> RegGetAllSubKeyNames = new Func<string, string, string[]>( (rootName, keyName) =>
     {
 		try
@@ -477,6 +544,12 @@ Func<string, string, string[]> RegGetAllSubKeyNames = new Func<string, string, s
 		return null;
 	});
 
+/// <summary>
+/// Retrieves an array of strings that contains all the value names associated with this key.
+/// </summary>
+/// <param name="rootName">The HKEY to open.</param>
+/// <param name="subKeyName">The name or path of the subkey to open. This string is not case-sensitive.</param>
+/// <returns>An array of strings that contains the value names for the current key. If no value names for the key are found, an empty array is returned. A registry key can have a default value — that is, a name/value pair in which the name is the empty string (""). If a default value has been set for a registry key, the array returned by the GetValueNames method includes the empty string.</returns>
 Func<string, string, string[]> RegGetValueNames = new Func<string, string, string[]>( (rootName, keyName) =>
     {
 		try
