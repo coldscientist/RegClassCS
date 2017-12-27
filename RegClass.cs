@@ -83,7 +83,7 @@ Func<string, Microsoft.Win32.RegistryKey> RegOpenSubKey = new Func<string, Micro
 /// </summary>
 /// <param name="rootName">The HKEY to open.</param>
 /// <param name="keyName">The name or path of the subkey to create or open. This string is not case-sensitive.</param>
-/// <returns>The newly created subkey, or false if the operation failed. If a zero-length string is specified for subkey, the current RegistryKey object is returned.</returns>
+/// <returns>Returns false if the operation failed.</returns>
 Func<string, string, bool> RegCreateKey = new Func<string, string, bool>( (rootName, keyName) =>
     {
 		try
