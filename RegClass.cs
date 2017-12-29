@@ -30,7 +30,7 @@ Func<string, Microsoft.Win32.RegistryKey> RegOpenSubKey = new Func<string, Micro
 		Microsoft.Win32.RegistryHive hKey = Microsoft.Win32.RegistryHive.CurrentUser;
 		Microsoft.Win32.RegistryView view = Microsoft.Win32.RegistryView.Default;
 		
-		if (rootName.Substring(Math.Max(0, rootName.Length - 4)) == "64")
+		if (rootName.Substring(Math.Max(0, rootName.Length - 2)) == "64")
 		{
 			if (Environment.Is64BitOperatingSystem)
 			{
@@ -42,7 +42,7 @@ Func<string, Microsoft.Win32.RegistryKey> RegOpenSubKey = new Func<string, Micro
 			}
 		}
 		
-		switch(rootName)
+		switch(rootName.Replace("64", ""))
 		{
 			case "HKEY_CLASSES_ROOT":
 			case "HKCR":
@@ -443,13 +443,18 @@ Func<string, string, string[]> RegGetSubKeyNames = new Func<string, string, stri
 					{
 						Ketarin.Forms.LogDialog.Log("RegGetSubKeyNames Length: " + subKeys.Length); 
 					}
+					
+					for (int i = 0; i <= subKeys.Length -1; i++)
+					{
+						subKeys[i] = keyName + @"\" + subKeys[i];
+					}
 					return subKeys;
 				}
 				else
 				{
 					if (LogDebug)
 					{
-						Ketarin.Forms.LogDialog.Log("RegGetSubKeyNames Length: 0");
+						Ketarin.Forms.LogDialog.Log("RegGetSubKeyNames Length: Empty (0)");
 					}
 					// Abort("Key " + rootName + @"\" + keyName + " not found.");
 				}

@@ -66,7 +66,7 @@ C# Registry functions for [Ketarin](http://ketarin.canneverbe.com).
 You can build docs using [Natural Docs](http://www.naturaldocs.org).
 
 ```
-NaturalDocs.exe RegClassCS\docs -do
+NaturalDocs.exe RegClassCS\docs
 ```
 	
 ## License
